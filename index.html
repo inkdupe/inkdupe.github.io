@@ -1,10 +1,579 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>website</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>epic scripts</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to left, #f0a481, #dd7132);
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            color: #222;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0;
+            background: transparent;
+        }
+
+        body::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+            background: transparent;
+        }
+
+        body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .title-part1 {
+            color: #ff1e00;
+        }
+
+        .title-part2 {
+            color: #ffa083;
+        }
+
+        .container {
+            padding-top: 100px;
+        }
+
+        #searchInput {
+            width: 500px;
+            padding: 12px 16px;
+            font-size: 16px;
+            border-radius: 15px;
+            border: 2px solid #f03d3d;
+            margin: 0 auto 30px auto;
+            display: block;
+            box-sizing: border-box;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+            transform-origin: center center;
+        }
+
+        #searchInput:hover {
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.527);
+            transform: scale(1.03);
+        }
+
+        #searchInput:focus {
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.527);
+            transform: scale(1.02);
+            outline: none;
+        }
+
+        #searchInput:focus:hover {
+            transform: scale(1.02);
+        }
+
+        #searchInput:focus {
+            outline: none;
+        }
+
+        .scripts-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .script-card {
+            background: #fd9a6177;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid #f03d3d;
+            width: 150px;
+            height: 200px;
+            padding: 20px;
+            cursor: pointer;
+            transition: opacity 0.6s ease, box-shadow 0.3s ease, transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            transform-origin: center;
+            position: relative;
+            opacity: 0;
+        }
+
+        .script-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .script-card:hover {
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.527);
+            transform: scale(1.05) rotate(1deg);
+        }
+
+        .script-card:active, .script-card.pressed {
+            transform: scale(1) rotate(1deg);
+            box-shadow: 0 12px 40px rgba(255, 0, 0, 0.6);
+        }
+
+        .script-title {
+            margin-top: -15px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #ffb59f;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .script-game-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: #ff4931;
+            margin-top: 14px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .script-image {
+            position: absolute;
+            bottom: 0;
+            height: 160px;
+            width: 160px;
+            margin-left: -5px;
+            margin-right: -5px;
+            margin-bottom: 15px;
+            margin-top: auto;
+            border-radius: 12px;
+            object-fit: cover;
+            user-select: none;
+            -webkit-user-drag: none;
+            pointer-events: auto;
+        }
+
+        #no-scripts-found {
+            text-align: center;
+            margin-top: 0px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #no-scripts-found .message-text {
+            margin-top: 80px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ff916f;
+        }
+
+        #no-scripts-found img {
+            margin-top: 20px;
+            width: 200px;
+        }
+
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .overlay-content {
+            background: #ffa977ad;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            border: 2px solid #f03d3d;
+            width: 500px;
+            height: 420px;
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .overlay-content:hover {
+            transform: scale(1.01);
+        }
+
+        #overlay h2 {
+            width: 80%;
+            margin: -25px auto 0 auto;
+            color: #ff7a52;
+            text-align: center;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        #overlay h2:hover {
+            transform: scale(1.05);
+            color: #fd7045;
+        }
+
+        #overlay h3 {
+            width: 80%;
+            text-align: center;
+            color: #ec533f;
+            font-size: 15px;
+            margin: -25px auto 0 auto;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        #overlay h3:hover {
+            transform: scale(1.05);
+            color: #ce5242;
+        }
+
+        #overlay h4 {
+            color: #ec533f;
+            width: 60%;
+            margin: -25px auto 0 auto;
+            margin-bottom: 5px;
+            margin-top: 40px;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        #overlay h4:hover {
+            transform: scale(1.1);
+            color: #f7432b;
+        }
+
+        #overlay img {
+            width: 100%;
+            height: auto;
+            max-height: 280px;
+            border-radius: 12px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            border: 2px solid #f03d3d;
+            transition: color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #overlay img:hover {
+            box-shadow: 0 6px 15px #b38b74b7;
+            transform: scale(1.02);
+            color: #f7432b;
+        }
+
+        .script-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: -10px;
+        }
+
+        #overlayScriptCode {
+            flex: 1;
+            width: 100%;
+            height: 40px;
+            border-radius: 12px;
+            border: 2px solid #f03d3d;
+            padding: 10px;
+            font-family: monospace, monospace;
+            font-size: 14px;
+            font-weight: 800;
+            background-color: #daa587c5;
+            color: #ffc7c1;
+            box-sizing: border-box;
+            white-space: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            cursor: text;
+            user-select: text;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+        }
+
+        #overlayScriptCode::-webkit-scrollbar {
+            display: none;
+        }
+
+        #overlayScriptCode:hover {
+            box-shadow: 0 6px 15px #b38b74b7;
+            transform: scale(1.05);
+            background-color: #e7b496b7;
+            color: #ffddd9;
+        }
+
+        #copyScriptBtn {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: none;
+            background-color: #ffc8a891;
+            border: 2px solid #f03d3d;
+            color: #ff7a52;
+            font-size: 18px;
+            font-weight: 1000;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 0;
+        }
+
+        #copyScriptBtn:hover {
+            box-shadow: 0 6px 15px #b38b74b7;
+            transform: scale(1.1) rotate(2deg);
+            background-color: #ffd6be91;
+        }
+
+        #copyScriptBtn:active, #copyScriptBtn.pressed {
+            transform: scale(1) rotate(1deg);
+        }
+
+        #copyScriptBtn img {
+            padding: 0;
+            border: 0px;
+            width: 40px;
+            height: 40px;
+            margin-left: -2px;
+            object-fit: contain;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        #closeOverlay {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 30px;
+            color: #ff4931;
+            cursor: pointer;
+            font-weight: bold;
+            line-height: 1;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        #closeOverlay:hover {
+            transform: scale(1.2);
+            color: #ff4931;
+        }
+
+        #closeOverlay:active, #closeOverlay.pressed {
+            transform: scale(1);
+        }
+
+        #notification-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .notification {
+            background-color: #ffc8a891;
+            border: 2px solid #f03d3d;
+            padding: 10px 20px;
+            border-radius: 12px;
+            color: #ff7a52;
+            font-weight: bold;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+
+            opacity: 0;
+            transform: translateY(-20px) scale(0.9);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    </style>
 </head>
 <body>
-  <h1>hello world</h1>
-  <p>test</p>
+
+    <h1><span class="title-part1">epic</span><span class="title-part2"> scripts</span></h1>
+
+    <div id="notification-container"></div>
+
+    <div class="container">
+        <input type="text" id="searchInput" placeholder="try &quot;epic script&quot;" oninput="filterScripts()" />
+    </div>
+
+    <div class="scripts-container" id="scriptsContainer">
+    </div>
+
+    <div id="no-scripts-found" style="display:none; text-align:center; margin-top:40px;">
+        <div class="message-text">No scripts found</div>
+        <img src="assets/monkey.png" alt="No scripts" />
+    </div>
+
+    <div id="overlay" style="display:none;">
+    <div class="overlay-content">
+        <button id="closeOverlay">&times;</button>
+        <h2 id="overlayScriptTitle">Title</h2>
+        <h3 id="overlayScriptDesc">Description</h3>
+        <h4 id="overlayGameTitle">Game Title</h4>
+        <img id="overlayImage" src="https://tr.rbxcdn.com/180DAY-233a115e47f0bfd54757e1c03fbea1c1/768/432/Image/Webp/noFilter" alt="Script Image" />
+        <div class="script-row">
+            <div id="overlayScriptCode" tabindex="0" readonly></div>
+            <button id="copyScriptBtn">
+                <img src="/assets/copy.png" alt="Copy" />
+            </button>
+        </div>
+    </div>
+    </div>
+
+    <script src="scripts.js"></script>
+    <script>
+        function showNotification(message) {
+        const container = document.getElementById('notification-container');
+        const note = document.createElement('div');
+        note.className = 'notification';
+        note.textContent = message;
+        container.appendChild(note);
+
+        setTimeout(() => {
+            note.classList.add('show');
+        }, 10);
+
+        setTimeout(() => {
+            note.classList.remove('show');
+
+            note.addEventListener('transitionend', () => {
+            if (note.parentNode) container.removeChild(note);
+            }, { once: true });
+        }, 3000);
+        }
+
+
+        function filterScripts() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.script-card');
+            let anyVisible = false;
+
+            cards.forEach(card => {
+                const nameEl = card.querySelector('.script-title');
+                const gameTitleEl = card.querySelector('.script-game-title');
+
+                const name = nameEl ? nameEl.textContent.toLowerCase() : '';
+                const gameTitle = gameTitleEl ? gameTitleEl.textContent.toLowerCase() : '';
+
+                if (input === "epic script") {
+                    card.style.display = 'flex';
+                    anyVisible = true;
+                } else if (name.includes(input) || gameTitle.includes(input)) {
+                    card.style.display = 'flex';
+                    anyVisible = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            const noScriptsEl = document.getElementById('no-scripts-found');
+            noScriptsEl.style.display = anyVisible ? 'none' : 'block';
+        }
+
+        document.getElementById('closeOverlay').addEventListener('click', () => {
+            const overlay = document.getElementById('overlay');
+            overlay.classList.remove('show');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        });
+
+        function createScriptCard(script) {
+            const card = document.createElement('div');
+            card.className = 'script-card';
+
+            const titleEl = document.createElement('div');
+            titleEl.className = 'script-title';
+            titleEl.textContent = script.title;
+            card.appendChild(titleEl);
+
+            const descEl = document.createElement('div');
+            descEl.className = 'script-desc';
+            descEl.style.display = 'none';
+            descEl.textContent = script.desc;
+            card.appendChild(descEl);
+
+            const gameTitleEl = document.createElement('div');
+            gameTitleEl.className = 'script-game-title';
+            gameTitleEl.textContent = script.gameTitle;
+            card.appendChild(gameTitleEl);
+
+            const img = document.createElement('img');
+            img.className = 'script-image';
+            img.src = script.icon;
+            img.alt = 'Script Image';
+            card.appendChild(img);
+
+            card.addEventListener('click', () => {
+                document.getElementById('overlayScriptTitle').textContent = script.title;
+                document.getElementById('overlayScriptDesc').textContent = script.desc;
+                document.getElementById('overlayGameTitle').textContent = script.gameTitle;
+                document.getElementById('overlayImage').src = script.thumbnail;
+                document.getElementById('overlayScriptCode').textContent = script.code;
+
+                const overlay = document.getElementById('overlay');
+                overlay.style.display = 'flex';
+                setTimeout(() => overlay.classList.add('show'), 10);
+            });
+
+            return card;
+        }
+
+        const container = document.getElementById('scriptsContainer');
+        container.innerHTML = '';
+
+        scripts.forEach((script, index) => {
+            const card = createScriptCard(script);
+            container.appendChild(card);
+
+            setTimeout(() => {
+            card.classList.add('visible');
+            }, index * 50);
+        });
+
+        document.getElementById('copyScriptBtn').addEventListener('click', () => {
+            const codeBox = document.getElementById('overlayScriptCode');
+            const text = codeBox.textContent;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('Script copied to clipboard!');
+                }, () => {
+                    showNotification('Failed to copy script.');
+                });
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showNotification('Script copied to clipboard!');
+                } catch {
+                    showNotification('Failed to copy script.');
+                }
+                document.body.removeChild(textarea);
+            }
+        });
+
+    </script>
 </body>
 </html>
